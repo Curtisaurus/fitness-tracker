@@ -68,6 +68,11 @@ router.get("/workouts/range", (req, res) => {
     },
     {
       $limit: 7
+    },
+    {
+      $sort: {
+        'day': 1
+      }
     }
   ])
   .then((workoutdocs) => {
