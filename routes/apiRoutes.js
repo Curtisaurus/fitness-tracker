@@ -3,13 +3,26 @@ const Workout = require('../models/workout.js');
 
 // gets all workouts
 router.get("/workouts", (req, res) => {
-  Workout.find({}).sort('day')
-    .then((workoutdocs) => {
-      res.json(workoutdocs);
-    })
-    .catch((err) => {
-      res.json(err);
-    });
+  Workout.aggregate([
+    {
+      $addFields: {
+        totalDuration: {
+          $sum: "$exercises.duration"
+        }
+      }
+    },
+    {
+      $sort: {
+        'day': 1
+      }
+    }
+  ])
+  .then((workoutdocs) => {
+    res.json(workoutdocs);
+  })
+  .catch((err) => {
+    res.json(err);
+  });
 });
 
 // creates a new workout
@@ -58,7 +71,6 @@ router.get("/workouts/range", (req, res) => {
     }
   ])
   .then((workoutdocs) => {
-    console.log(workoutdocs)
     res.json(workoutdocs);
   })
   .catch((err) => {
